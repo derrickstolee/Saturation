@@ -1,0 +1,6 @@
+*.o
+*.exe
+nauty/
+TreeSearch/
+*CVS/
+Debug/
