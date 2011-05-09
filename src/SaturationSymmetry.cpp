@@ -346,13 +346,8 @@ void init_generator_data_completion( int n, int r )
 {
 	complete_n = n;
 	complete_size = r - 2;
-<<<<<<< HEAD
 	nchooses = (int*) malloc((complete_size + 1) * sizeof(int));
 	completion_orbits = (int**) malloc((complete_size + 1) * sizeof(int*));
-=======
-	nchooses = (int*) malloc((complete_size+1) * sizeof(int));
-	completion_orbits = (int**) malloc((complete_size+1) * sizeof(int*));
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 
 	for ( int k = 0; k <= complete_size; k++ )
 	{
@@ -394,7 +389,6 @@ void use_generator_completion( int count, permutation *perm, int *orbits, int nu
 				}
 
 				int pindex = indexOfSet(s, perm_set);
-<<<<<<< HEAD
 				//
 				//				bool are_equal = true;
 				//
@@ -405,8 +399,6 @@ void use_generator_completion( int count, permutation *perm, int *orbits, int nu
 				//						are_equal = false;
 				//					}
 				//				}
-=======
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 
 				/* wait until ordered pair match */
 				while ( pindex != start_index )
@@ -492,7 +484,6 @@ void computeStabilizedOrbits( int r, SaturationGraph* satgraph, int pairindex, A
 	int n = satgraph->getN();
 	int m = (nv + WORDSIZE - 1) / WORDSIZE;
 	nauty_check(WORDSIZE, m, nv, NAUTYVERSIONID);
-<<<<<<< HEAD
 
 	DYNALLSTAT(int, lab, lab_n);
 	DYNALLSTAT(int, ptn, ptn_n);
@@ -620,152 +611,6 @@ void computeStabilizedOrbits( int r, SaturationGraph* satgraph, int pairindex, A
 						can_complete = false;
 					}
 
-=======
-
-	DYNALLSTAT(int, lab, lab_n);
-	DYNALLSTAT(int, ptn, ptn_n);
-	DYNALLSTAT(int, orbits, orbits_n);
-
-	DYNALLOC1(int, lab, lab_n, nv, "malloc");
-	DYNALLOC1(int, ptn, ptn_n, nv, "malloc");
-	DYNALLOC1(int, orbits, orbits_n, nv, "malloc");
-
-	/* create labels and partitions */
-	/* the partition splits {i,j},{0,...(skip i,j)...,n-1},{n+i,n+j},{n,...(skip n_i, n+j)...,nv-1} */
-	for ( int i = 0; i < nv; i++ )
-	{
-		lab[i] = i;
-		ptn[i] = 1;
-	}
-
-	/* rearrange {i,j} and {n+i,n+j} */
-	lab[0] = pairi;
-	lab[pairi] = 0;
-	int temp = lab[1];
-	lab[1] = pairj;
-	lab[pairj] = temp;
-
-	lab[n] = n + pairi;
-	lab[n + pairi] = n;
-	temp = lab[n + 1];
-	lab[n + 1] = n + pairj;
-	lab[n + pairj] = temp;
-
-	ptn[1] = 0;
-	ptn[n - 1] = 0;
-	ptn[n + 1] = 0;
-	ptn[nv - 1] = 0;
-
-//	printf("--[computeStabilizedOrbits] Stabilizing %d %d with Labels ", pairi, pairj);
-
-//	for ( int i = 0; i < nv; i++ )
-//	{
-//		printf("%2d", lab[i]);
-//		if ( ptn[i] == 0 )
-//		{
-//			printf("|");
-//		}
-//		else
-//		{
-//			printf(" ");
-//		}
-//	}
-
-	static DEFAULTOPTIONS_SPARSEGRAPH( options);
-
-	init_generator_data_completion(n, r);
-
-	options.defaultptn = FALSE; /* we DO need colors */
-	options.getcanon = FALSE; /* we don't need the stabilized labels */
-	options.digraph = FALSE;
-	options.userautomproc = &use_generator_completion;
-
-	options.invarproc = &adjacencies_sg; /* sparse version */
-
-	statsblk stats; /* we'll use this at the end */
-	DYNALLSTAT(setword, workspace, worksize);
-	DYNALLOC1(setword, workspace, worksize, 50 * m, "malloc");
-
-	sparsegraph canon_g;
-	SG_INIT(canon_g);
-
-	/* call nauty */
-	clock_t start_c = clock();
-	time_t start_t = time(NULL);
-	nauty((graph*) g, lab, ptn, NULL, orbits, &options, &stats, workspace, 50 * m, m, nv, (graph*) &canon_g);
-	clock_t end_c = clock();
-	time_t end_t = time(NULL);
-
-	/* fill in the orbitLabels */
-	int bigOrbSize = 1;
-
-	for ( int s = 1; s <= r-2; s++ )
-	{
-		bigOrbSize += nchooses[s];
-	}
-
-	augment->completionOrbitReps = (int**) malloc(bigOrbSize * sizeof(int*));
-	for ( int i = 0; i < bigOrbSize; i++ )
-	{
-		augment->completionOrbitReps[i] = 0;
-	}
-
-	int index = 0;
-
-	if ( n + r - 2 <= satgraph->getN() )
-	{
-		/* we could add ALL vertices! */
-		augment->completionOrbitReps[index] = (int*)malloc((r-2)*sizeof(int));
-
-		for ( int i = 0; i < r-2; i++ )
-		{
-			augment->completionOrbitReps[index][i] = n + i;
-		}
-
-		index++;
-	}
-
-//	printf("\tResulting in orbits ");
-	int* temp_set = (int*) malloc((r - 2) * sizeof(int));
-
-	for ( int s = 1; s <= r - 2; s++ )
-	{
-		if ( n + (r-2-s) > satgraph->getMaxN() )
-		{
-//			printf("|{%d}| = X  ", s);
-			/* there are too many vertices! */
-			continue;
-		}
-
-		int base_index = index;
-		for ( int set_index = 0; set_index < nchooses[s]; set_index++ )
-		{
-			/* add the orbit iff it is a representative AND can be a completion for the pair */
-			if ( completion_orbits[s][set_index] == set_index )
-			{
-				bool can_complete = true;
-				indexToSet(s, set_index, temp_set);
-
-				/* check if the set contains i or j */
-				for ( int k = 0; can_complete && k < s; k++ )
-				{
-					if ( temp_set[k] == pairi || temp_set[k] == pairj )
-					{
-						can_complete = false;
-					}
-				}
-
-				for ( int k = 0; can_complete && k < s; k++ )
-				{
-					int ki_index = indexOf(pairi, temp_set[k]);
-					int kj_index = indexOf(pairj, temp_set[k]);
-
-					if ( satgraph->getAdjacency(ki_index) == 0 || satgraph->getAdjacency(kj_index) == 0 )
-					{
-						can_complete = false;
-					}
-
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 					for ( int l = k + 1; can_complete && l < s; l++ )
 					{
 						int kl_index = indexOf(temp_set[k], temp_set[l]);
@@ -783,15 +628,9 @@ void computeStabilizedOrbits( int r, SaturationGraph* satgraph, int pairindex, A
 					indexToSet(s, set_index, augment->completionOrbitReps[index]);
 
 					/* fill in the rest */
-<<<<<<< HEAD
 					for ( int t = s; t < r - 2; t++ )
 					{
 						augment->completionOrbitReps[index][t] = n + (t - s);
-=======
-					for ( int t = s; t < r-2; t++ )
-					{
-						augment->completionOrbitReps[index][t] = n + (t-s);
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 					}
 
 					/* increase the set orbit */
@@ -800,11 +639,7 @@ void computeStabilizedOrbits( int r, SaturationGraph* satgraph, int pairindex, A
 			}
 		}
 
-<<<<<<< HEAD
 		//		printf("|{%d}| = %d | ", s, index - base_index );
-=======
-//		printf("|{%d}| = %d | ", s, index - base_index );
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 	}
 
 	/* set numOrbits */
@@ -812,11 +647,7 @@ void computeStabilizedOrbits( int r, SaturationGraph* satgraph, int pairindex, A
 	free(temp_set);
 	temp_set = 0;
 
-<<<<<<< HEAD
 	//	printf("(%d total)\n", index);
-=======
-//	printf("(%d total)\n", index);
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 
 	/* free workspace */
 	DYNFREE(workspace, worksize);

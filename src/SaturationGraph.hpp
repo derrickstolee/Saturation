@@ -397,10 +397,7 @@ class SaturationGraph
 		 * getAdjacency
 		 */
 		char getAdjacency(int index);
-<<<<<<< HEAD
 
-=======
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 };
 
 #endif /* SATURATIONGRAPH_HPP_ */

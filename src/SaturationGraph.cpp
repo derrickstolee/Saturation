@@ -27,7 +27,6 @@
  */
 void SaturationGraph::regenerateOpenEdges()
 {
-<<<<<<< HEAD
 	clock_t start_c = clock();
 	//	/* Regenerate the 2-type Edge Set */
 
@@ -133,197 +132,10 @@ void SaturationGraph::regenerateOpenEdges()
 	{
 		int ionedeg = 0;
 		int izerodeg = 0;
-=======
-	//	/* Regenerate the 2-type Edge Set */
-	//	this->openedges->clear();
-	//
-	//	int Nchoose2 = (this->n * (this->n - 1)) / 2;
-	//
-	//	for ( int i = 0; i < Nchoose2; i++ )
-	//	{
-	//		if ( this->adjmat[i] == 2 )
-	//		{
-	//			this->openedges->add(i);
-	//		}
-	//	}
-	//
-	//	/* Double-Check every 0-type edge */
-	//
-	//	for ( int i = 0; i < Nchoose2; i++ )
-	//	{
-	//		if ( this->adjmat[i] == 0 )
-	//		{
-	//			if ( this->completions[i] == 0 )
-	//			{
-	//				printf("--[SaturationGraph] There is a 0-type edge with no completion: %d\n", i);
-	//			}
-	//			else
-	//			{
-	//				/* be sure all completion edges are 1-type */
-	//				int vi, vj;
-	//				this->indexToPair(i, vi, vj);
-	//
-	//				for ( int k = 0; k < this->r - 2; k++ )
-	//				{
-	//					int vk = this->completions[i][k];
-	//					int ik_index = this->indexOf(vi, vk);
-	//					int jk_index = this->indexOf(vj, vk);
-	//
-	//					if ( this->adjmat[ik_index] != 1 )
-	//					{
-	//						printf(
-	//						       "\t\t\t--[SaturationGraph] What should be a 1-type edge is of %d-type: index %d vi=%d vk=%d\n",
-	//						       this->adjmat[ik_index], ik_index, vi, vk);
-	//					}
-	//					if ( this->adjmat[jk_index] != 1 )
-	//					{
-	//						printf(
-	//						       "\t\t\t--[SaturationGraph] What should be a 1-type edge is of %d-type: index %d vj=%d vk=%d\n",
-	//						       this->adjmat[jk_index], jk_index, vj, vk);
-	//					}
-	//
-	//					for ( int l = 0; l < k; l++ )
-	//					{
-	//						int vl = this->completions[i][l];
-	//
-	//						int il_index = this->indexOf(vi, vl);
-	//						int jl_index = this->indexOf(vj, vl);
-	//						int kl_index = this->indexOf(vl, vk);
-	//
-	//						if ( this->adjmat[il_index] != 1 )
-	//						{
-	//							printf(
-	//							       "\t\t\t--[SaturationGraph] What should be a 1-type edge is of %d-type: index %d vi=%d vl=%d\n",
-	//							       this->adjmat[il_index], il_index, vi, vl);
-	//						}
-	//						if ( this->adjmat[jl_index] != 1 )
-	//						{
-	//							printf(
-	//							       "\t\t\t--[SaturationGraph] What should be a 1-type edge is of %d-type: index %d vj=%d vl=%d\n",
-	//							       this->adjmat[jl_index], jl_index, vj, vl);
-	//						}
-	//						if ( this->adjmat[kl_index] != 1 )
-	//						{
-	//							printf(
-	//							       "\t\t\t--[SaturationGraph] What should be a 1-type edge is of %d-type: index %d vk=%d vl=%d\n",
-	//							       this->adjmat[kl_index], kl_index, vk, vl);
-	//						}
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//	/* NOW: Check that all 1-edges have completemult > 0 */
-	//	for ( int i= 0; i < Nchoose2; i++ )
-	//	{
-	//		if ( this->adjmat[i] == 1 && this->completemult[i] <= 0 )
-	//		{
-	//			printf("\t\t\t--[SaturtionGraph] There is a 1-type edge NOT in any completion! %d\n", i);
-	//		}
-	//
-	//	}
-
-	/* fix degree sequences */
-	//	bzero(this->zeroDegrees, this->N * sizeof(int));
-
-	for ( int i = 0; i < this->n; i++ )
-	{
-		int ionedeg = 0;
-		int izerodeg = 0;
 		for ( int j = 0; j < this->n; j++ )
 		{
 			if ( j != i )
 			{
-				int index = indexOf(i, j);
-
-				if ( this->adjmat[index] == 0 )
-				{
-					izerodeg++;
-				}
-				else if ( this->adjmat[index] == 1 )
-				{
-					ionedeg++;
-				}
-			}
-		}
-
-		if ( izerodeg != this->zeroDegrees[i] )
-		{
-			this->zeroDegrees[i] = izerodeg;
-		}
-
-		if ( ionedeg != this->oneDegrees[i] )
-		{
-			this->oneDegrees[i] = ionedeg;
-		}
-	}
-}
-
-/**
- * compactTheGraph() Compact the graph g into small_g.
- */
-void SaturationGraph::compactTheGraph()
-{
-	this->regenerateOpenEdges();
-
-	if ( this->small_g != 0 )
-	{
-		/* we need to free small_g */
-		SG_FREE((*(this->small_g)));
-		free(this->small_g);
-		this->small_g = 0;
-	}
-
-	this->small_g = (sparsegraph*) malloc(sizeof(sparsegraph));
-
-	SG_INIT((*(this->small_g)));
-
-	/* small_g has two levels: one for each type (0/1) of edge */
-	int sn = 2 * this->n;
-	this->small_g->nv = sn;
-
-	this->small_g->vlen = sn;
-	this->small_g->dlen = sn;
-
-	this->small_g->v = (int*) malloc(sn * sizeof(int));
-	this->small_g->d = (int*) malloc(sn * sizeof(int));
-
-	int vindex = 0;
-	for ( int i = 0; i < this->n; i++ )
-	{
-		this->small_g->v[i] = vindex;
-		this->small_g->d[i] = 1 + this->zeroDegrees[i];
-		vindex += 1 + this->zeroDegrees[i];
-	}
-	for ( int i = 0; i < this->n; i++ )
-	{
-		this->small_g->v[this->n + i] = vindex;
-		this->small_g->d[this->n + i] = 1 + this->oneDegrees[i];
-		vindex += 1 + this->oneDegrees[i];
-	}
-
-	int sde = vindex;
-	this->small_g->nde = sde;
-	this->small_g->elen = sde;
-
-	this->small_g->e = (int*) malloc(sde * sizeof(int));
-
-	for ( int i = 0; i < this->n; i++ )
-	{
-		vindex = this->small_g->v[i];
-		int vdeg = this->small_g->d[i];
-
-		/* the cross-bar */
-		this->small_g->e[vindex] = i + this->n;
-
-		int ve = 1;
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
-		for ( int j = 0; j < this->n; j++ )
-		{
-			if ( j != i )
-			{
-<<<<<<< HEAD
 				int index = indexOf(i, j);
 
 				if ( this->adjmat[index] == 0 )
@@ -409,27 +221,6 @@ void SaturationGraph::compactTheGraph()
 		/* the cross-bar */
 		this->small_g->e[vindex] = i + this->n;
 
-=======
-				int index = this->indexOf(i, j);
-
-				/* 0-type edges in this layer */
-				if ( this->adjmat[index] == 0 )
-				{
-					this->small_g->e[vindex + ve] = j;
-					ve++;
-				}
-			}
-		}
-	}
-	for ( int i = 0; i < this->n; i++ )
-	{
-		vindex = this->small_g->v[this->n + i];
-		int vdeg = this->small_g->d[this->n + i];
-
-		/* the cross-bar */
-		this->small_g->e[vindex] = i;
-
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 		int ve = 1;
 		for ( int j = 0; j < this->n; j++ )
 		{
@@ -437,22 +228,14 @@ void SaturationGraph::compactTheGraph()
 			{
 				int index = this->indexOf(i, j);
 
-<<<<<<< HEAD
 				/* 0-type edges in this layer */
 				if ( this->adjmat[index] == 0 )
 				{
 					this->small_g->e[vindex + ve] = j;
-=======
-				/* 1-type edges in this layer */
-				if ( this->adjmat[index] == 1 )
-				{
-					this->small_g->e[vindex + ve] = this->n + j;
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 					ve++;
 				}
 			}
 		}
-<<<<<<< HEAD
 	}
 	for ( int i = 0; i < this->n; i++ )
 	{
@@ -483,11 +266,6 @@ void SaturationGraph::compactTheGraph()
 
 	clock_t end_c = clock();
 	(this->time_in_compact) = this->time_in_compact + (double) (end_c - start_c) / (double) CLOCKS_PER_SEC;
-=======
-	}
-
-	this->g_updated = false;
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 }
 
 /**
@@ -1375,7 +1153,6 @@ void SaturationGraph::computeOrbits()
 	/* get the top augmentation */
 	Augmentation* augment = this->augmentations.top();
 
-<<<<<<< HEAD
 	if ( augment->numOrbits >= 0 )
 	{
 		/* orbits are calculated */
@@ -1393,18 +1170,6 @@ void SaturationGraph::computeOrbits()
 
 		clock_t end_c = clock();
 		(this->time_in_orbits) = (this->time_in_orbits) + (double) (end_c - start_c) / (double) CLOCKS_PER_SEC;
-=======
-	/* the orbits have not been calculated yet */
-	this->g_updated = true;
-
-	/* First, build the 2-layer graph small_g */
-	this->compactTheGraph();
-
-	if ( 1 )
-	{
-		/* Now, feed it into the symmetry method */
-		computeUnassignedOrbits(this, augment);
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 	}
 	else
 	{
@@ -1580,7 +1345,6 @@ void SaturationGraph::computeStabilizer( int i, int j )
 	{
 		if ( 1 )
 		{
-<<<<<<< HEAD
 			clock_t start_c = clock();
 			/* we WANT this to be the right way */
 			this->compactTheGraph();
@@ -1589,10 +1353,6 @@ void SaturationGraph::computeStabilizer( int i, int j )
 			clock_t end_c = clock();
 			(this->time_in_stabilized) = (this->time_in_stabilized) + (double) (end_c - start_c)
 			        / (double) CLOCKS_PER_SEC;
-=======
-			/* we WANT this to be the right way */
-			computeStabilizedOrbits(this->r, this, index, augment);
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 		}
 		else
 		{
@@ -1610,7 +1370,6 @@ void SaturationGraph::computeStabilizer( int i, int j )
 
 			int pairi = i;
 			int pairj = j;
-<<<<<<< HEAD
 
 			for ( int s = 1; s <= r - 2; s++ )
 			{
@@ -1656,53 +1415,6 @@ void SaturationGraph::computeStabilizer( int i, int j )
 						augment->completionOrbitReps[orb] = (int*) malloc((r - 2) * sizeof(int));
 						indexToSet(s, set_index, augment->completionOrbitReps[orb]);
 
-=======
-
-			for ( int s = 1; s <= r - 2; s++ )
-			{
-				if ( n + (r - 2 - s) > this->getMaxN() )
-				{
-					/* there are too many vertices! */
-					continue;
-				}
-
-				int nChooseS = nChooseK(this->n, s);
-
-				int base_index = index;
-				for ( int set_index = 0; set_index < nChooseS; set_index++ )
-				{
-					/* add the orbit iff it can be a completion for the pair */
-
-					bool can_complete = true;
-					indexToSet(s, set_index, temp_set);
-
-					for ( int k = 0; can_complete && k < s; k++ )
-					{
-						int ki_index = indexOf(pairi, temp_set[k]);
-						int kj_index = indexOf(pairj, temp_set[k]);
-
-						if ( this->getAdjacency(ki_index) == 0 || this->getAdjacency(kj_index) == 0 )
-						{
-							can_complete = false;
-						}
-
-						for ( int l = k + 1; can_complete && l < s; l++ )
-						{
-							int kl_index = indexOf(temp_set[k], temp_set[l]);
-							if ( this->getAdjacency(kl_index) == 0 )
-							{
-								can_complete = false;
-							}
-						}
-					}
-
-					if ( can_complete )
-					{
-						/* this is a good completion */
-						augment->completionOrbitReps[orb] = (int*) malloc((r - 2) * sizeof(int));
-						indexToSet(s, set_index, augment->completionOrbitReps[orb]);
-
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 						/* fill in the rest */
 						for ( int t = s; t < r - 2; t++ )
 						{
@@ -1994,7 +1706,6 @@ bool SaturationGraph::isCanonical()
 		//		return true;
 		//	}
 	}
-<<<<<<< HEAD
 	else if ( 0 )
 	{
 		/* compute based on 1-degrees */
@@ -2070,8 +1781,6 @@ bool SaturationGraph::isCanonical()
 			return true;
 		}
 	}
-=======
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 
 	/* compute canonical labels now */
 	this->computeOrbits();
@@ -2089,20 +1798,7 @@ bool SaturationGraph::isCanonical()
 		{
 			int ii, ij;
 			indexToPair(index, ii, ij);
-<<<<<<< HEAD
 
-=======
-			//
-			//			degree_tuple[0] = this->zeroDegrees[ii];
-			//			degree_tuple[1] = this->oneDegrees[ii];
-			//			degree_tuple[2] = this->zeroDegrees[ij];
-			//			degree_tuple[3] = this->oneDegrees[ij];
-			//
-			//			int degree_index = indexOfTuple(this->n, 4, degree_tuple);
-			//
-			//			if ( degree_index == min_deg_index )
-			//			{
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 			/* try min canon label */
 			int canon_index = indexOf(augment->canonicalLabels[ii], augment->canonicalLabels[ij]);
 

@@ -233,11 +233,7 @@ int nChooseK(int n, int k)
  *
  * Get the product order of the set of a given size.
  */
-<<<<<<< HEAD
 int indexOfTuple(int n, int size, int* tuple)
-=======
-int indexOfTuple( int n, int size, int* tuple )
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 {
 	if ( size == 0 )
 	{
@@ -268,11 +264,7 @@ int indexOfTuple( int n, int size, int* tuple )
 /**
  * indexToTuple
  */
-<<<<<<< HEAD
 void indexToTuple(int n, int size, int index, int* tuple)
-=======
-void indexToTuple( int n, int size, int index, int* tuple )
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 {
 	if ( size == 0 )
 	{
@@ -285,17 +277,12 @@ void indexToTuple( int n, int size, int index, int* tuple )
 	else
 	{
 		int npow = pow(n, size - 1);
-<<<<<<< HEAD
 		tuple[size - 1] = (int) floor(index / npow);
-=======
-		tuple[size - 1] = (int)floor(index / npow);
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 		int base = npow * tuple[size - 1];
 		int offset = index - base;
 		indexToTuple(n, size - 1, offset, tuple);
 	}
 }
-<<<<<<< HEAD
 
 /**
  * numSetsW
@@ -417,5 +404,3 @@ void getSetWOWO(int s, int i, int j, int index, int* set)
 		}
 	}
 }
-=======
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be

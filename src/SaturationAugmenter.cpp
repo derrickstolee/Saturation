@@ -63,11 +63,6 @@ SaturationNode::~SaturationNode()
  */
 void SaturationAugmenter::initializeNode( SaturationNode* node, int& orbit, int& completer )
 {
-	if ( node->initialized )
-	{
-		return;
-	}
-
 	if ( node->numOrbits < 0 )
 	{
 
@@ -85,8 +80,6 @@ void SaturationAugmenter::initializeNode( SaturationNode* node, int& orbit, int&
 		if ( mode == _MODE_ORBITAL_ && this->satdata->getNum2Edges() == 0 )
 		{
 			node->numOrbits = 0;
-			orbit = -1;
-			completer = -1;
 			return;
 		}
 #endif
@@ -115,7 +108,6 @@ void SaturationAugmenter::initializeNode( SaturationNode* node, int& orbit, int&
 			{
 				node->curOrbitCompleterReps = this->satdata->getCompletionOrbits(node->orbitReps[node->curOrbit],
 				                                                                 node->curNumCompleters);
-				completer = 0;
 			}
 		}
 	}
@@ -130,6 +122,9 @@ void SaturationAugmenter::initializeNode( SaturationNode* node, int& orbit, int&
  */
 void SaturationAugmenter::getInitialOrbitCompleter( SaturationNode* node, int& orbit, int& completer )
 {
+	/* we need to compute orbits for this data */
+	this->initializeNode(node, orbit, completer);
+
 	if ( this->mode == _MODE_CANONICAL_ )
 	{
 		orbit = 0;
@@ -165,6 +160,8 @@ void SaturationAugmenter::getInitialOrbitCompleter( SaturationNode* node, int& o
 		if ( node->numOrbits > 1 )
 		{
 			int maxOrbitSize = 0;
+			double min0degree = 0;
+			double min1degree = this->maxN * this->maxN * 2;
 			int nChoose2 = nChooseK(this->satdata->getN(), 2);
 			int* orbit_sizes = (int*) malloc(nChoose2 * sizeof(int));
 			bzero(orbit_sizes, nChoose2 * sizeof(int));
@@ -177,25 +174,59 @@ void SaturationAugmenter::getInitialOrbitCompleter( SaturationNode* node, int& o
 					int orbitIndex = this->satdata->get2OrbitIndexByRepresentative(j);
 					int osize = orbit_sizes[orbitIndex] + 1;
 					orbit_sizes[orbitIndex] = osize;
-
-					if ( osize > maxOrbitSize )
-					{
-						orbit = orbitIndex;
-						maxOrbitSize = osize;
-					}
-					else if ( osize == maxOrbitSize && orbit > orbitIndex )
-					{
-						orbit = orbitIndex;
-					}
 				}
 			}
 
+			/* Select the "best" orbit */
+			/* TODO: Insert branching rules here! */
+			for ( int j = 0; j < node->numOrbits; j++ )
+			{
+				int ej = node->orbitReps[j];
+				if ( this->satdata->getAdjacency(ej) == 2 )
+				{
+					int osize = orbit_sizes[j];
+					int vi, vj;
+					indexToPair(ej, vi, vj);
+					double deg0sum = osize / (double) (1.0 + this->satdata->getDegree(vi, 0)
+					        + this->satdata->getDegree(vj, 0));
+					double deg1sum = osize / (double) (1.0 + this->satdata->getDegree(vi, 1)
+					        + this->satdata->getDegree(vj, 1));
+
+#ifdef _DEG_SUM_ORBIT_CHOICE
+					if ( deg0sum > min0degree )
+					{
+						orbit = j;
+						maxOrbitSize = osize;
+						min0degree = deg0sum;
+						min1degree = deg1sum;
+					}
+					else if ( deg0sum == min0degree && deg1sum < min1degree )
+					{
+						orbit = j;
+						maxOrbitSize = osize;
+						min1degree = deg1sum;
+					}
+					else if ( deg0sum == min0degree && deg1sum == min1degree && osize > maxOrbitSize )
+					{
+						orbit = j;
+						maxOrbitSize = osize;
+					}
+#else
+					if ( osize > maxOrbitSize )
+					{
+						orbit = j;
+						maxOrbitSize = osize;
+					}
+#endif
+				}
+			}
 			free(orbit_sizes);
 			node->chosenOrbit = orbit;
 			//			printf("Selected orbit %d of size %d (numOrbits %d).\n", orbit, maxOrbitSize, node->numOrbits);
 		}
 		else if ( node->numOrbits == 1 )
 		{
+			//			printf("Only one orbit.\n");
 			node->chosenOrbit = 0;
 		}
 
@@ -203,7 +234,7 @@ void SaturationAugmenter::getInitialOrbitCompleter( SaturationNode* node, int& o
 		{
 			/* we can't do anything here */
 			node->chosenOrbit = -1;
-			orbit = -1;
+			orbit = node->numOrbits + 3;
 			completer = 0xFFFF;
 		}
 		else
@@ -214,6 +245,7 @@ void SaturationAugmenter::getInitialOrbitCompleter( SaturationNode* node, int& o
 			if ( node->curNumCompleters <= 0 )
 			{
 				/* just jump to filling */
+				orbit = node->numOrbits;
 				completer = 0xFFFF;
 			}
 		}
@@ -228,65 +260,75 @@ void SaturationAugmenter::getInitialOrbitCompleter( SaturationNode* node, int& o
  */
 void SaturationAugmenter::getNextOrbitCompleter( SaturationNode* node, int& orbit, int& completer )
 {
-	if ( orbit < node->numOrbits )
+	if ( orbit < node->numOrbits && completer < node->curNumCompleters - 1 )
 	{
 		/* just use the next completer */
 		completer++;
-	}
-
-	if ( this->mode == _MODE_ORBITAL_ )
-	{
-		if ( completer == node->curNumCompleters )
-		{
-			completer = 0xFFFF;
-			return;
-		}
-		else if ( completer > node->curNumCompleters )
-		{
-			/* no more children! */
-			orbit = -1;
-			completer = -1;
-		}
-
 		return;
 	}
-	else if ( this->mode == _MODE_CANONICAL_ )
-	{
-		if ( completer < node->curNumCompleters - 1 )
-		{
-			return;
-		}
 
-		if ( orbit >= node->numOrbits )
+	if ( node->numOrbits <= 0 && this->mode == _MODE_ORBITAL_ )
+	{
+		node->chosenOrbit = -1;
+		/* just jump to adding a vertex */
+		orbit = node->numOrbits + 3;
+		completer = 0xFFFF;
+	}
+
+	if ( orbit >= node->numOrbits || this->mode == _MODE_CANONICAL_ )
+	{
+		/* try all orbits */
+		orbit++;
+	}
+	else
+	{
+		/* ORBITAL and below numOrbits */
+		if ( node->numOrbits == 0 )
 		{
-			/* try all orbits, or move to fill */
-			orbit++;
-			completer = 0xFFFF;
+			orbit = node->numOrbits + 1;
 		}
 		else
 		{
+			/* just jump to filling */
+			orbit = node->numOrbits;
+		}
+	}
 
-			completer = 0;
+	if ( orbit >= node->numOrbits + 1 && mode == _MODE_ORBITAL_ )
+	{
+		orbit = -1;
+		completer = -1;
+		return;
+	}
 
-			/* COMPUTE NEW curNumCompleters */
-			this->initializeNode(node, orbit, completer);
+	if ( orbit >= node->numOrbits )
+	{
+		completer = 0xFFFF;
+	}
+	else
+	{
 
-			while ( orbit < node->numOrbits && node->curNumCompleters == 0 )
+		completer = 0;
+
+		/* COMPUTE NEW curNumCompleters */
+		this->initializeNode(node, orbit, completer);
+
+		while ( orbit < node->numOrbits && node->curNumCompleters == 0 )
+		{
+			orbit++;
+
+			if ( orbit < node->numOrbits )
 			{
-				orbit++;
-
-				if ( orbit < node->numOrbits )
-				{
-					this->initializeNode(node, orbit, completer);
-				}
+				this->initializeNode(node, orbit, completer);
 			}
 		}
-		if ( orbit >= node->numOrbits + 2 )
-		{
-			/* we have surpassed the possible augmentations */
-			orbit = -1;
-			completer = -1;
-		}
+	}
+
+	if ( orbit >= node->numOrbits + 2 )
+	{
+		/* we have surpassed the possible augmentations */
+		orbit = -1;
+		completer = -1;
 	}
 }
 
@@ -351,20 +393,8 @@ LONG_T SaturationAugmenter::pushNext()
 	int orbit = child >> 16;
 	int completer = child & 0xFFFF;
 
-
 	if ( child < 0 )
 	{
-		orbit = -1;
-		completer = -1;
-
-		/* we need to compute orbits for this data */
-		this->initializeNode(node, orbit, completer);
-
-		if (orbit < 0 )
-		{
-			return -1;
-		}
-
 		this->getInitialOrbitCompleter(node, orbit, completer);
 	}
 	else
@@ -384,10 +414,9 @@ LONG_T SaturationAugmenter::pushNext()
 		return -1;
 	}
 
-	LONG_T next_child = ((LONG_T) orbit << 16) | (LONG_T) (completer & 0xFFFF);
-	node->curChild = next_child;
+	child = ((LONG_T) orbit << 16) | (LONG_T) (completer & 0xFFFF);
 
-	return this->pushTo(next_child);
+	return this->pushTo(child);
 }
 
 /**
@@ -421,12 +450,9 @@ LONG_T SaturationAugmenter::pushTo( LONG_T child )
 		this->initializeNode(node, orbit, completer);
 	}
 
-	node->curChild = child;
-
 #ifdef _AUGMENT_ALL_VERTICES_FIRST_
 	if ( node->numOrbits <= 0 )
 	{
-		printf("--[SaturationAugmenter::pushTo(%llX)] There are %d orbits.\n", child, node->numOrbits);
 		return -1;
 	}
 #endif
@@ -434,54 +460,33 @@ LONG_T SaturationAugmenter::pushTo( LONG_T child )
 	/********************************** TAKE SNAPSHOT **************/
 	this->satdata->snapshot();
 
-	if ( this->mode == _MODE_CANONICAL_ )
+	if ( orbit < node->numOrbits )
 	{
-		if ( orbit < node->numOrbits )
+		/* Augment with a completer */
+		int i, j;
+		indexToPair(node->orbitReps[orbit], i, j);
+		this->augmentation_succeeded = this->satdata->augmentCompletion(i, j, node->curOrbitCompleterReps[completer]);
+	}
+	else if ( orbit == node->numOrbits )
+	{
+		/* Fill */
+		if ( this->mode == _MODE_CANONICAL_ )
 		{
-			/* Augment with a completer */
-			int i, j;
-			indexToPair(node->orbitReps[orbit], i, j);
-			this->augmentation_succeeded = this->satdata->augmentCompletion(i, j,
-			                                                                node->curOrbitCompleterReps[completer]);
-		}
-		else if ( orbit == node->numOrbits )
-		{
-			/* Fill */
-			if ( this->mode == _MODE_CANONICAL_ )
-			{
-				this->augmentation_succeeded = this->satdata->augmentFill(-1);
-			}
-		}
-		else if ( orbit == node->numOrbits + 1 && mode == _MODE_CANONICAL_ )
-		{
-			/* Add a vertex */
-			this->augmentation_succeeded = this->satdata->augmentVertex();
+			this->augmentation_succeeded = this->satdata->augmentFill(-1);
 		}
 		else
 		{
-			printf("--[SaturationAugmenter::pushTo(%llX)] Orbit too high.\n", child);
-			return -1;
+			this->augmentation_succeeded = this->satdata->augmentFill(node->chosenOrbit);
 		}
 	}
-	else if ( this->mode == _MODE_ORBITAL_ )
+	else if ( orbit == node->numOrbits + 1 && mode == _MODE_CANONICAL_ )
 	{
-		if ( orbit < node->numOrbits && completer < node->curNumCompleters )
-		{
-			/* Augment with a completer */
-			int i, j;
-			indexToPair(node->orbitReps[orbit], i, j);
-			this->augmentation_succeeded = this->satdata->augmentCompletion(i, j,
-			                                                                node->curOrbitCompleterReps[completer]);
-		}
-		else if ( orbit < node->numOrbits && completer >= node->curNumCompleters )
-		{
-			this->augmentation_succeeded = this->satdata->augmentFill(orbit);
-		}
-		else if ( orbit >= node->numOrbits )
-		{
-			printf("--[SaturationAugmenter::pushTo(%llX)] Orbit too high.\n", child);
-			return -1;
-		}
+		/* Add a vertex */
+		this->augmentation_succeeded = this->satdata->augmentVertex();
+	}
+	else
+	{
+		return -1;
 	}
 
 	this->stack.push_back(new SaturationNode(child));

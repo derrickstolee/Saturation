@@ -271,7 +271,6 @@ class SaturationData
 		char* degseq;
 		int initDegreeSequence();
 		void cleanDegreeSequence();
-		char getDegree( int i, int type );
 		void setDegree( int i, int type, char value );
 
 		/**
@@ -571,6 +570,9 @@ class SaturationData
 		 * getNum2Edges
 		 */
 		int getNum2Edges();
+
+
+		char getDegree( int i, int type );
 
 		/**
 		 * printEdgeStack

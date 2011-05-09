@@ -30,10 +30,7 @@ SaturationManager::SaturationManager( int r, int N )
 	this->N = N;
 
 	this->satgraph = new SaturationGraph(r, N);
-<<<<<<< HEAD
 
-=======
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 	this->haltAtSolutions = false;
 }
 

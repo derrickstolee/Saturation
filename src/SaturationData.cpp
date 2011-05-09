@@ -1039,7 +1039,6 @@ void SaturationData::removeSetCommonNeigh(int size, int set_index, int i)
  * 	removeEdgeInSet(size, index).
  * Returns FALSE if a K_r is created.
  */
-
 int SaturationData::initEdgesInSet()
 {
 	int base_index_size = (this->getMaxEdgesInSetSize()) * sizeof(int);
@@ -2232,6 +2231,8 @@ void SaturationData::removeVertex()
 	this->removeVertexFromOneGraph();
 	this->removeVertexFromZeroGraph();
 }
+
+
 
 /**
  * augmentFill()

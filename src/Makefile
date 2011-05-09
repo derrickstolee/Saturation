@@ -26,12 +26,8 @@ OBJECTS = 	Augmentation.o				\
 CC 	= gcc
 CXX = g++
 
-<<<<<<< HEAD
-OPT = -O4 -static
-# -O7
-=======
-OPT = -O4 
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
+OPT = -O4
+# -lprofiler 
 DEBUG =  
 # -g 
 # -static 

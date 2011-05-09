@@ -70,7 +70,6 @@ Augmentation::Augmentation( AUGMENT_TYPE type, int i, int j, int* completion, in
 	this->completionOrbitReps = 0;
 	this->canonicalLabels = 0;
 	this->zeroOrbitLabels = 0;
-<<<<<<< HEAD
 
 	this->zeroEdges = 0;
 	this->numZeroEdges = -1;
@@ -78,8 +77,6 @@ Augmentation::Augmentation( AUGMENT_TYPE type, int i, int j, int* completion, in
 	this->numZeroGraphOrbits = -1;
 	this->zeroGraphOrbitLabels = 0;
 	this->zeroGraphCanonLabels = 0;
-=======
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 
 	this->oldN = oldN;
 }

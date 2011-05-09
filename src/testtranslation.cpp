@@ -11,11 +11,7 @@
 
 #include "translation.hpp"
 
-<<<<<<< HEAD
 void test(int N, int r, int* set, int* set2)
-=======
-void test( int N, int r, int* set, int* set2 )
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 {
 	int tupleindex = indexOfTuple(N, r, set);
 	indexToTuple(N, r, tupleindex, set2);
@@ -72,11 +68,7 @@ void test( int N, int r, int* set, int* set2 )
 	}
 }
 
-<<<<<<< HEAD
 int main(void)
-=======
-int main( void )
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 {
 	int r = 4;
 
@@ -138,7 +130,6 @@ int main( void )
 		{
 			set[0] = a;
 			test(N, r, set, set2);
-<<<<<<< HEAD
 		}
 	}
 
@@ -234,8 +225,6 @@ int main( void )
 					(coverage[fullindex])++;
 				}
 			}
-=======
->>>>>>> 54e39aa63d051762fc09f22b848b5047ef0e72be
 		}
 	}
 
