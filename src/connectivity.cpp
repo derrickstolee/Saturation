@@ -34,7 +34,7 @@ bool findPath( sparsegraph* g, int v1, int v2, char* without_ear, int without_ve
 
 	for ( int i = 0; without_ear[i] != v2 && without_ear[i] >= 0; i++ )
 	{
-		visited[without_ear[i]] = 1;
+		visited[(int)without_ear[i]] = 1;
 	}
 	visited[without_vert] = 1;
 

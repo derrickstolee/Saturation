@@ -127,7 +127,7 @@ class SaturationData
 		/**
 		 * snapshots -- The number of edge augmentations at the current depth.
 		 */
-		int* snapshots;
+		size_t* snapshots;
 
 		/**
 		 * snapshotorder -- The number of vertices at each snapshot depth.

@@ -223,8 +223,8 @@ int SaturationData::initLayerGraph()
 	this->layer_graph->vlen = 2 * this->maxN;
 	this->layer_graph->dlen = 2 * this->maxN;
 
-	int vert_array_size = 2 * this->maxN * sizeof(int);
-	this->layer_graph->v = (int*) malloc(vert_array_size);
+	int vert_array_size = 2 * this->maxN * sizeof(size_t);
+	this->layer_graph->v = (size_t*) malloc(vert_array_size);
 	this->layer_graph->d = (int*) malloc(vert_array_size);
 
 	for ( int i = 0; i < 2 * this->maxN; i++ )
@@ -238,7 +238,7 @@ int SaturationData::initLayerGraph()
 	int edge_array_size = 2 * this->maxN * this->maxN * sizeof(int);
 	this->layer_graph->e = (int*) malloc(edge_array_size);
 
-	for ( int i = 0; i < this->layer_graph->elen; i++ )
+	for ( size_t i = 0; i < this->layer_graph->elen; i++ )
 	{
 		this->layer_graph->e[i] = -1;
 	}
@@ -344,8 +344,8 @@ int SaturationData::initOneGraph()
 	this->one_graph->vlen = this->maxN;
 	this->one_graph->dlen = this->maxN;
 
-	int vert_array_size = this->maxN * sizeof(int);
-	this->one_graph->v = (int*) malloc(vert_array_size);
+	int vert_array_size = this->maxN * sizeof(size_t);
+	this->one_graph->v = (size_t*) malloc(vert_array_size);
 	this->one_graph->d = (int*) malloc(vert_array_size);
 
 	for ( int i = 0; i < this->maxN; i++ )
@@ -359,7 +359,7 @@ int SaturationData::initOneGraph()
 	int edge_array_size = this->maxN * (this->maxN - 1) * sizeof(int);
 	this->one_graph->e = (int*) malloc(edge_array_size);
 
-	for ( int i = 0; i < this->one_graph->elen; i++ )
+	for ( size_t i = 0; i < this->one_graph->elen; i++ )
 	{
 		this->one_graph->e[i] = -1;
 	}
@@ -432,7 +432,7 @@ int SaturationData::initZeroGraph()
 	this->zero_graph->dlen = this->maxN;
 
 	int vert_array_size = this->maxN * sizeof(int);
-	this->zero_graph->v = (int*) malloc(vert_array_size);
+	this->zero_graph->v = (size_t*) malloc(vert_array_size);
 	this->zero_graph->d = (int*) malloc(vert_array_size);
 
 	for ( int i = 0; i < this->maxN; i++ )
@@ -446,7 +446,7 @@ int SaturationData::initZeroGraph()
 	int edge_array_size = this->maxN * (this->maxN - 1) * sizeof(int);
 	this->zero_graph->e = (int*) malloc(edge_array_size);
 
-	for ( int i = 0; i < this->zero_graph->elen; i++ )
+	for ( size_t i = 0; i < this->zero_graph->elen; i++ )
 	{
 		this->zero_graph->e[i] = -1;
 	}

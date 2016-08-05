@@ -160,13 +160,10 @@ void SaturationAugmenter::getInitialOrbitCompleter( SaturationNode* node, int& o
 		if ( node->numOrbits > 1 )
 		{
 			int maxOrbitSize = 0;
-			double min0degree = 0;
-			double min1degree = this->maxN * this->maxN * 2;
 			int nChoose2 = nChooseK(this->satdata->getN(), 2);
 			int* orbit_sizes = (int*) malloc(nChoose2 * sizeof(int));
 			bzero(orbit_sizes, nChoose2 * sizeof(int));
 
-			int orbitRep = 0;
 			for ( int j = 0; j < nChoose2; j++ )
 			{
 				if ( this->satdata->getAdjacency(j) == 2 )
@@ -187,12 +184,13 @@ void SaturationAugmenter::getInitialOrbitCompleter( SaturationNode* node, int& o
 					int osize = orbit_sizes[j];
 					int vi, vj;
 					indexToPair(ej, vi, vj);
+
+#ifdef _DEG_SUM_ORBIT_CHOICE
 					double deg0sum = osize / (double) (1.0 + this->satdata->getDegree(vi, 0)
 					        + this->satdata->getDegree(vj, 0));
 					double deg1sum = osize / (double) (1.0 + this->satdata->getDegree(vi, 1)
 					        + this->satdata->getDegree(vj, 1));
 
-#ifdef _DEG_SUM_ORBIT_CHOICE
 					if ( deg0sum > min0degree )
 					{
 						orbit = j;

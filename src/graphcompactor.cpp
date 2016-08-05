@@ -26,7 +26,7 @@ sparsegraph* compactsg( sparsegraph* g )
 	cg->vlen = g->nv;
 	cg->dlen = g->nv;
 
-	cg->v = (int*) malloc(cg->vlen * sizeof(int));
+	cg->v = (size_t*) malloc(cg->vlen * sizeof(size_t));
 	cg->d = (int*) malloc(cg->dlen * sizeof(int));
 
 	int i, j;

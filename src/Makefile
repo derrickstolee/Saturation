@@ -38,18 +38,20 @@ CFLAGS 		= $(OPT) $(DEBUG) $(WARNINGS)
 CXXFLAGS 	= $(OPT) $(DEBUG) $(WARNINGS)
 LFLAGS 		= $(OPT) $(DEBUG) $(WARNINGS)
 
+TREESEARCHDIR = ../../TreeSearch
+NAUTYDIR = ../../nauty
 
-INCLUDES =  -I../TreeSearch \
-			-I../nauty 
+INCLUDES =  -I$(TREESEARCHDIR) \
+			-I$(NAUTYDIR) 
 
 
-TREESEARCHOBJS	= ../TreeSearch/SearchManager.o 
+TREESEARCHOBJS	= $(TREESEARCHDIR)/SearchManager.o 
 				  
-NAUTYOBJS     	= ../nauty/nauty.o 			\
-				  ../nauty/nausparse.o		\
-				  ../nauty/gtools.o			\
-				  ../nauty/nautil.o			\
-				  ../nauty/naugraph.o
+NAUTYOBJS     	= $(NAUTYDIR)/nauty.o 			\
+				  $(NAUTYDIR)/nausparse.o		\
+				  $(NAUTYDIR)/gtools.o			\
+				  $(NAUTYDIR)/nautil.o			\
+				  $(NAUTYDIR)/naugraph.o
 					
 LIBOBJS			= $(TREESEARCHOBJS) $(NAUTYOBJS)
 			
