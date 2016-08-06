@@ -52,9 +52,6 @@ int main(int argc, char** argv)
 		options.getcanon = TRUE; /* gets labels */
 		options.digraph = TRUE;
 
-		/* options.invarproc = &adjacencies_sg; /* sparse version */
-		//	options.invarproc = &adjtriang;
-
 		statsblk stats; /* we'll use this at the end */
 		DYNALLSTAT(setword, workspace, worksize);
 		DYNALLOC1(setword, workspace, worksize, 50 * m, "malloc");

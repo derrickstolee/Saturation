@@ -227,11 +227,7 @@ void computeUnassignedOrbits( SaturationGraph* satgraph, Augmentation* augment )
 	SG_INIT(canon_g);
 
 	/* call nauty */
-	clock_t start_c = clock();
-	time_t start_t = time(NULL);
 	nauty((graph*) g, lab, ptn, NULL, orbits, &options, &stats, workspace, 50 * m, m, nv, (graph*) &canon_g);
-	clock_t end_c = clock();
-	time_t end_t = time(NULL);
 
 	int index = 0;
 
@@ -538,9 +534,7 @@ void computeStabilizedOrbits( int r, SaturationGraph* satgraph, int pairindex, A
 	SG_INIT(canon_g);
 
 	/* call nauty */
-	clock_t start_c = clock();
 	nauty((graph*) g, lab, ptn, NULL, orbits, &options, &stats, workspace, 50 * m, m, nv, (graph*) &canon_g);
-	clock_t end_c = clock();
 
 	/* fill in the orbitLabels */
 	int bigOrbSize = 1;
@@ -583,7 +577,6 @@ void computeStabilizedOrbits( int r, SaturationGraph* satgraph, int pairindex, A
 			continue;
 		}
 
-		int base_index = index;
 		for ( int set_index = 0; set_index < nchooses[s]; set_index++ )
 		{
 			/* add the orbit iff it is a representative AND can be a completion for the pair */

@@ -126,9 +126,6 @@ LONG_T SaturationManager::pushNext()
 	int num_orbits = this->satgraph->numOrbits();
 	if ( orbit < num_orbits )
 	{
-		int aug_size = this->satgraph->getDepth();
-		int my_size = this->stack.size();
-
 		int* orbit_array = this->satgraph->getOrbit(orbit);
 		int orbit_rep_pair = orbit_array[0];
 

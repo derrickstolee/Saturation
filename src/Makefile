@@ -1,5 +1,5 @@
 #
-# Base Makefile for EarSearch project.
+# Makefile for Saturation project.
 #
 TESTS 	= testtranslation.exe		\
 			saturationdatasizetest.exe
@@ -27,12 +27,8 @@ CC 	= gcc
 CXX = g++
 
 OPT = -O4
-# -lprofiler 
-DEBUG =  
-# -g 
-# -static 
-WARNINGS = -Wall
-
+DEBUG = 
+WARNINGS = -Wall -Werror
 
 CFLAGS 		= $(OPT) $(DEBUG) $(WARNINGS)
 CXXFLAGS 	= $(OPT) $(DEBUG) $(WARNINGS)
@@ -44,24 +40,22 @@ NAUTYDIR = ../../nauty
 INCLUDES =  -I$(TREESEARCHDIR) \
 			-I$(NAUTYDIR) 
 
-
 TREESEARCHOBJS	= $(TREESEARCHDIR)/SearchManager.o 
-				  
+
 NAUTYOBJS     	= $(NAUTYDIR)/nauty.o 			\
 				  $(NAUTYDIR)/nausparse.o		\
 				  $(NAUTYDIR)/gtools.o			\
 				  $(NAUTYDIR)/nautil.o			\
-				  $(NAUTYDIR)/naugraph.o
-					
+				  $(NAUTYDIR)/naugraph.o		\
+				  $(NAUTYDIR)/schreier.o		\
+				  $(NAUTYDIR)/naurng.o
+
 LIBOBJS			= $(TREESEARCHOBJS) $(NAUTYOBJS)
-			
-			
+
 .SUFFIXES: .c .cpp .o .obj .exe 
 
 all: $(OBJECTS) $(TESTS) $(TARGETS)
 
-
-# The default object compiler
 .c.o: $<
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) -c $< -o $@
         
@@ -70,25 +64,25 @@ all: $(OBJECTS) $(TESTS) $(TARGETS)
         
 .cpp.exe: $< $(OBJECTS)  
 	$(CXX) $(LFLAGS)			\
-        	$(INCLUDES)	$(DEBUG)			\
-        	$(LIBOBJS) $(LIBS)				\
-        	`cat $@.objs`           		\
-            $< -o $@
-        
+	$(INCLUDES)	$(DEBUG)			\
+	$(LIBOBJS) $(LIBS)				\
+	`cat $@.objs`           		\
+	$< -o $@
+
 .c.exe: $< $(COBJECTS)
 	$(CC) 	$(LFLAGS)			    \
-        	$(INCLUDES)				\
-        	$(NAUTYOBJS)  $(COBJECTS) $(LIBS)		\
-            $< -o $@
-        
+	$(INCLUDES)				\
+	$(NAUTYOBJS)  $(COBJECTS) $(LIBS)		\
+	$< -o $@
+
 clean:
-	rm $(OBJECTS) $(TARGETS) $(TESTS)
-	
+	-@rm $(OBJECTS) $(TARGETS) $(TESTS)
+
 cleanexe:
-	rm $(TARGETS)
+	-@rm $(TARGETS)
 
 cleantest:
-	rm $(TESTS)
+	-@rm $(TESTS)
 
 clexe:
-	rm $(TARGETS)
+	-@rm $(TARGETS)

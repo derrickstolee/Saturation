@@ -38,8 +38,8 @@ int SaturationData::initSnapshots()
 	/* this is just a guess */
 	this->depth = 0;
 	this->maxDepth = (this->maxN * this->maxN) / 8;
-	int snapshots_size = this->maxDepth * sizeof(int);
-	this->snapshots = (int*) malloc(snapshots_size);
+	int snapshots_size = this->maxDepth * sizeof(size_t);
+	this->snapshots = (size_t*) malloc(snapshots_size);
 	this->snapshotorder = (int*) malloc(snapshots_size);
 	this->augmentorder = (int*) malloc(snapshots_size);
 
@@ -80,8 +80,8 @@ void SaturationData::testSnapshotSize()
 	if ( this->depth >= this->maxDepth )
 	{
 		this->maxDepth = 2 * this->maxDepth;
-		int snapshots_size = this->maxDepth * sizeof(int);
-		this->snapshots = (int*) realloc(this->snapshots, snapshots_size);
+		int snapshots_size = this->maxDepth * sizeof(size_t);
+		this->snapshots = (size_t*) realloc(this->snapshots, snapshots_size);
 		this->snapshotorder = (int*) realloc(this->snapshotorder, snapshots_size);
 		this->augmentorder = (int*) realloc(this->augmentorder, snapshots_size);
 
@@ -3051,9 +3051,7 @@ void SaturationData::restrictCanonical(Set* potential, Augmentation* augment, in
 	int minTupleMult = this->maxN * this->maxN;
 
 	int zeroDegTuple[2];
-	int oneDegTuple[2];
 	int* zeroDegMult = 0;
-	int* oneDegMult = 0;
 	bool hasAutoComplete = false;
 	Set* auto_set = 0;
 
@@ -3541,7 +3539,6 @@ void SaturationData::printEdgeStack()
 		possibly_canonical->add(this->zero_edges->next());
 	}
 
-	int aug_index = indexOf(augment->i, augment->j);
 	int minLabel1 = this->maxN;
 	int minLabel2 = this->maxN;
 	int minIndex = -1;

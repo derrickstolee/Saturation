@@ -191,7 +191,7 @@ void SaturationGraph::compactTheGraph()
 	this->small_g->vlen = sn;
 	this->small_g->dlen = sn;
 
-	this->small_g->v = (int*) malloc(sn * sizeof(int));
+	this->small_g->v = (size_t*) malloc(sn * sizeof(size_t));
 	this->small_g->d = (int*) malloc(sn * sizeof(int));
 
 	int vindex = 0;
@@ -216,7 +216,6 @@ void SaturationGraph::compactTheGraph()
 	for ( int i = 0; i < this->n; i++ )
 	{
 		vindex = this->small_g->v[i];
-		int vdeg = this->small_g->d[i];
 
 		/* the cross-bar */
 		this->small_g->e[vindex] = i + this->n;
@@ -240,7 +239,6 @@ void SaturationGraph::compactTheGraph()
 	for ( int i = 0; i < this->n; i++ )
 	{
 		vindex = this->small_g->v[this->n + i];
-		int vdeg = this->small_g->d[this->n + i];
 
 		/* the cross-bar */
 		this->small_g->e[vindex] = i;
@@ -1381,7 +1379,6 @@ void SaturationGraph::computeStabilizer( int i, int j )
 
 				int nChooseS = nChooseK(this->n, s);
 
-				int base_index = index;
 				for ( int set_index = 0; set_index < nChooseS; set_index++ )
 				{
 					/* add the orbit iff it can be a completion for the pair */
@@ -1446,8 +1443,6 @@ void SaturationGraph::computeStabilizer( int i, int j )
  */
 int SaturationGraph::numStabilizedOrbits( int i, int j )
 {
-	int index = this->indexOf(i, j);
-
 	this->computeStabilizer(i, j);
 
 	Augmentation* augment = this->augmentations.top();
@@ -1474,8 +1469,6 @@ int* SaturationGraph::getStabilizedCompletion( int i, int j, int k )
 		/* bad input */
 		return 0;
 	}
-
-	int index = this->indexOf(i, j);
 
 	this->computeStabilizer(i, j);
 
@@ -1550,13 +1543,11 @@ bool SaturationGraph::isCanonical()
 	{
 		/* check for a completemult == 0  */
 		bool has_zero_mult = false;
-		int zero_index = 0;
 		for ( int i = 0; !has_zero_mult && i < this->n * (this->n - 1) / 2; i++ )
 		{
 			if ( this->adjmat[i] == 1 && this->completemult[i] == 0 )
 			{
 				has_zero_mult = true;
-				zero_index = i;
 			}
 		}
 
@@ -2059,7 +2050,7 @@ char* SaturationGraph::getString()
 	sg.vlen = sn;
 	sg.dlen = sn;
 
-	sg.v = (int*) malloc(sn * sizeof(int));
+	sg.v = (size_t*) malloc(sn * sizeof(size_t));
 	sg.d = (int*) malloc(sn * sizeof(int));
 
 	int vindex = 0;

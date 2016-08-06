@@ -277,11 +277,9 @@ void computeUnassignedOrbits(SaturationData* satdata, Augmentation* augment)
 
 	/* call nauty */
 	clock_t start_c = clock();
-	time_t start_t = time(NULL);
 	nauty_calls++;
 	nauty((graph*) g, lab, ptn, NULL, orbits, &options, &stats, workspace, 50 * m, m, nv, (graph*) &canon_g);
 	clock_t end_c = clock();
-	time_t end_t = time(NULL);
 
 	nauty_time += (double) (end_c - start_c) / (double) CLOCKS_PER_SEC;
 	nauty_layer_time += (double) (end_c - start_c) / (double) CLOCKS_PER_SEC;
@@ -507,11 +505,9 @@ void computeZeroGraphSymmetry(SaturationData* satdata, Augmentation* augment)
 
 	/* call nauty */
 	clock_t start_c = clock();
-	time_t start_t = time(NULL);
 	nauty_calls++;
 	nauty((graph*) g, lab, ptn, NULL, orbits, &options, &stats, workspace, 50 * m, m, nv, (graph*) &canon_g);
 	clock_t end_c = clock();
-	time_t end_t = time(NULL);
 
 	nauty_time += (double) (end_c - start_c) / (double) CLOCKS_PER_SEC;
 	nauty_zero_time += (double) (end_c - start_c) / (double) CLOCKS_PER_SEC;
@@ -527,8 +523,6 @@ void computeZeroGraphSymmetry(SaturationData* satdata, Augmentation* augment)
 	{
 		augment->zeroGraphOrbitLabels[i] = -1;
 	}
-
-	int zeroindex = 0;
 
 	for ( int pair_ij = 0; pair_ij < nChooseK(n, 2); pair_ij++ )
 	{
@@ -793,11 +787,9 @@ void computeStabilizedOrbits(int r, SaturationData* satdata, int pairindex, Augm
 
 	/* call nauty */
 	clock_t start_c = clock();
-	time_t start_t = time(NULL);
 	nauty_calls++;
 	nauty((graph*) g, lab, ptn, NULL, orbits, &options, &stats, workspace, 50 * m, m, nv, (graph*) &canon_g);
 	clock_t end_c = clock();
-	time_t end_t = time(NULL);
 
 	nauty_time += (double) (end_c - start_c) / (double) CLOCKS_PER_SEC;
 	nauty_stab_time += (double) (end_c - start_c) / (double) CLOCKS_PER_SEC;
@@ -846,7 +838,6 @@ void computeStabilizedOrbits(int r, SaturationData* satdata, int pairindex, Augm
 		}
 		else
 		{
-			int base_index = index;
 			int num_wo_ij = numSetsWOWO(n, s, pairi, pairj);
 
 			for ( int set_index = 0; set_index < num_wo_ij; set_index++ )
